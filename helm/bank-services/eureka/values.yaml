@@ -1,0 +1,18 @@
+deploymentName: eureka-deployment
+serviceName: eureka
+appLabel: eureka
+appName: eureka
+replicaCount: 1
+image:
+  repository: docker.io/jagadeeshbackend/eureka-server
+  tag: v4
+#  pullPolicy: Always
+containerPort: 8070
+service:
+  type: LoadBalancer
+  port: 8070
+  targetPort: 8070
+appname_enabled: true
+profile_enabled: true
+eureka_enabled: true
+

@@ -1,0 +1,18 @@
+deploymentName: payment-deployment
+serviceName: payment
+appLabel: payment
+appName: payment
+replicaCount: 1
+image:
+  repository: docker.io/jagadeeshbackend/payment-ms
+  tag: v5
+  pullPolicy: Always
+containerPort: 8086
+service:
+  type: LoadBalancer
+  port: 8086
+  targetPort: 8086
+appname_enabled: true
+profile_enabled: true
+eureka_enabled: true
+

@@ -1,0 +1,18 @@
+deploymentName: credit-cards-deployment
+serviceName: credit-cards
+appLabel: credit-cards
+appName: credit-cards
+replicaCount: 1
+image:
+  repository: docker.io/jagadeeshbackend/credit-card-ms
+  tag: v4
+#  pullPolicy: Always
+containerPort: 8084
+service:
+  type: LoadBalancer
+  port: 8084
+  targetPort: 8084
+appname_enabled: true
+profile_enabled: true
+eureka_enabled: true
+

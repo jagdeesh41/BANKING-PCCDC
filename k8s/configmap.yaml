@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bank-configmap
+data:
+  SPRING_PROFILES_ACTIVE: default
+  SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071"
+  EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eureka:8070/eureka/"
+  EUREKA_INSTANCE_HOSTNAME: eureka
+  CONFIGSERVER_APPLICATION_NAME: config-server
+  EUREKA_APPLICATION_NAME: eureka
+  ACCOUNTS_APPLICATION_NAME: accounts
+  CARDS_APPLICATION_NAME: creditcards
+  DEBIT_APPLICATION_NAME: debitcards
+  PAYMENTS_APPLICATION_NAME: payment
+  ACCOUNTS_DATASOURCE_URL: "jdbc:mysql://accounts-database:3306/accountsdb"
+  CARDS_DATASOURCE_URL: "jdbc:mysql://cards-database:3306/cardsdb"
+  DEBIT_DATASOURCE_URL: "jdbc:mysql://debit-database:3306/debitdb"
+  ROOT: "root"
+

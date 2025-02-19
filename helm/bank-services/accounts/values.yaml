@@ -1,0 +1,18 @@
+deploymentName: accounts-deployment
+serviceName: accounts
+appLabel: accounts
+appName: accounts
+replicaCount: 1
+image:
+  repository: docker.io/jagadeeshbackend/accounts-ms
+  tag: v4
+#  pullPolicy: Always
+containerPort: 8083
+service:
+  type: LoadBalancer
+  port: 8083
+  targetPort: 8083
+appname_enabled: true
+profile_enabled: true
+eureka_enabled: true
+

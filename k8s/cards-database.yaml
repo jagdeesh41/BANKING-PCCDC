@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cards-database
+  labels:
+    app: cards-database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cards-database
+  template:
+    metadata:
+      labels:
+        app: cards-database
+    spec:
+      containers:
+        - name: cards-database
+          image: "mysql:latest"
+          ports:
+            - containerPort: 3306  # Default MySQL port inside the container
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: bank-configmap
+                  key: ROOT
+            - name: MYSQL_DATABASE
+              value: cardsdb
+          readinessProbe:  # Health check equivalent to `healthcheck` in Docker Compose
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - mysqladmin ping -uroot -proot
+            initialDelaySeconds: 10  # start_period in Docker Compose
+            periodSeconds: 10        # interval
+            timeoutSeconds: 10       # timeout
+            failureThreshold: 10     # retries
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cards-database
+spec:
+  selector:
+    app: cards-database
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 3306         # Exposed port on the cluster
+      targetPort: 3306   # Port inside the container
+

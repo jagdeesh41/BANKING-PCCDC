@@ -1,0 +1,226 @@
+services:
+  config-server:
+    image: "jagadeeshbackend/config-server:v1"
+    container_name: configserver-ms
+    platform: linux/amd64
+    ports:
+      - "8071:8071"
+    healthcheck:
+      test: "curl --fail --silent config-server:8071/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    depends_on:
+      accounts-database:
+        condition: service_healthy
+      payment-database:
+        condition: service_healthy
+      cards-database:
+        condition: service_healthy
+      debit-database:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: "config-server"
+    extends:
+      file: common-config.yml
+      service: microservice-base-config
+
+  eureka-server:
+    image: "jagadeeshbackend/eureka-server:v1"
+    container_name: eurekaserver-ms
+    platform: linux/amd64
+    ports:
+      - "8070:8070"
+    healthcheck:
+      test: "curl --fail --silent eureka-server:8070/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    depends_on:
+      config-server:
+        condition: service_healthy
+    extends:
+      file: common-config.yml
+      service: microservice-configserver-config
+    environment:
+      SPRING_APPLICATION_NAME: "eureka"
+      EUREKA_INSTANCE_HOSTNAME: "eureka-server"
+  accounts:
+    image: "jagadeeshbackend/accounts-ms:v1"
+    container_name: accounts-ms
+    platform: linux/amd64
+    ports:
+      - "8083:8083"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      accounts-database:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: "accounts"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://accounts-database:3306/accountsdb"
+    extends:
+      file: common-config.yml
+      service: microservice-eureka-config
+
+  accounts-database:
+    image: "mysql:latest"
+    container_name: accounts-db
+
+    ports:
+      - 3307:3306
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -uroot -proot"]
+      timeout: 10s
+      retries: 10
+      interval: 10s
+      start_period: 10s
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: accountsdb
+    networks:
+      - eazybank
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+
+  cards:
+    image: "jagadeeshbackend/credit-card-ms:v1"
+    container_name: cards-ms
+    platform: linux/amd64
+    ports:
+      - "8084:8084"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      cards-database:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: "creditcards"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://cards-database:3306/cardsdb"
+    extends:
+      file: common-config.yml
+      service: microservice-eureka-config
+  cards-database:
+    image: "mysql:latest"
+    container_name: cards-db
+    ports:
+      - 3308:3306
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -uroot -proot" ]
+      timeout: 10s
+      retries: 10
+      interval: 10s
+      start_period: 10s
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cardsdb
+    networks:
+      - eazybank
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+
+  debit:
+    image: "jagadeeshbackend/debit-card-ms:v1"
+    container_name: debit-ms
+    platform: linux/amd64
+    ports:
+      - "8085:8085"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      debit-database:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: "debitcards"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://debit-database:3306/debitdb"
+    extends:
+      file: common-config.yml
+      service: microservice-eureka-config
+
+  debit-database:
+    image: "mysql:latest"
+    container_name: debit-db
+
+    ports:
+      - 3309:3306
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -uroot -proot" ]
+      timeout: 10s
+      retries: 10
+      interval: 10s
+      start_period: 10s
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: debitdb
+    networks:
+      - eazybank
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+
+
+  payment:
+    image: "jagadeeshbackend/payment-ms:v1"
+    container_name: payment-ms
+    platform: linux/amd64
+    ports:
+      - "8086:8086"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      payment-database:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: "payment"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://payment-database:3306/paymentsdb"
+    extends:
+      file: common-config.yml
+      service: microservice-eureka-config
+
+
+  payment-database:
+    image: "mysql:latest"
+    container_name: payment-db
+    ports:
+      - 3311:3306
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -uroot -proot" ]
+      timeout: 10s
+      retries: 10
+      interval: 10s
+      start_period: 10s
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: paymentsdb
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - eazybank
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+networks:
+  eazybank:
+    driver: "bridge"
+volumes:
+  mysql-data:

@@ -1,0 +1,4 @@
+global:
+  configMapName: dev-configmap
+  activeProfile: default
+  eurekaServerURL: http://eureka:8070/eureka

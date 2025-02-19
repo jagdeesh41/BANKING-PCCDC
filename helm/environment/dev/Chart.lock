@@ -1,0 +1,18 @@
+dependencies:
+- name: bank-common
+  repository: file://../../bank-common
+  version: 0.1.0
+- name: eureka
+  repository: file://../../bank-services/eureka
+  version: 0.1.0
+- name: accounts
+  repository: file://../../bank-services/accounts
+  version: 0.1.0
+- name: credit-card
+  repository: file://../../bank-services/credit-card
+  version: 0.1.0
+- name: payment
+  repository: file://../../bank-services/payment
+  version: 0.1.0
+digest: sha256:4fff3917b388f618adf0ee9672e7237050f5a232b2cc0b9f285a5bb496ef88c8
+generated: "2025-01-18T23:19:27.658279+05:30"

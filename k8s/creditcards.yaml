@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: creditcards
+  labels:
+    app: creditcards
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: creditcards
+  template:
+    metadata:
+      labels:
+        app: creditcards
+    spec:
+      containers:
+        - name: creditcards
+          image: "jagadeeshbackend/credit-card-ms:v1"
+          ports:
+            - containerPort : 8084
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: bank-configmap
+                  key: SPRING_PROFILES_ACTIVE
+            - name: SPRING_APPLICATION_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: bank-configmap
+                  key: CARDS_APPLICATION_NAME
+            - name: SPRING_CONFIG_IMPORT
+              valueFrom:
+                configMapKeyRef:
+                  name: bank-configmap
+                  key: SPRING_CONFIG_IMPORT
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              valueFrom:
+                configMapKeyRef:
+                  name: bank-configmap
+                  key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: bank-configmap
+                  key: CARDS_DATASOURCE_URL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: creditcards
+spec:
+  selector:
+    app: creditcards
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8084
+      targetPort: 8084
