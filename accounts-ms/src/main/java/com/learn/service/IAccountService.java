@@ -1,14 +1,13 @@
 package com.learn.service;
 
-import com.learn.dto.AccountsDto;
-import com.learn.dto.CustomerDto;
+import com.learn.dto.AccountDto;
 
 public interface IAccountService {
-    String createAccount(CustomerDto customerDto);
-    AccountsDto updateAccount (String accountNumber,int amount);
+    void createAccount(String  mobileNumber);
 
-    AccountsDto fetchAccountByCustomerId(String customerId);
+    AccountDto updateAccount(AccountDto accountsDto);
 
+    AccountDto fetchAccountByMobileNumber(String mobileNumber);
 
 
 }

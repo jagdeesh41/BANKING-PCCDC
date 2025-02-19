@@ -9,9 +9,9 @@
         <version>1.0.0</version>
         <relativePath>../pccdc-bom/pom.xml</relativePath>
     </parent>
-    <artifactId>accounts</artifactId>
+    <artifactId>customer-ms</artifactId>
     <version>1.0.0</version>
-    <description>accounts ms</description>
+    <description>customer ms</description>
     <dependencies>
         <dependency>
             <groupId>com.learn</groupId>
