@@ -10,6 +10,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Schema(
+        name = "Response" ,
+        description = "Schema  to hold response information"
+
+)
 public class ResponseDto {
     @Schema(
             description = "Status code in the response"
